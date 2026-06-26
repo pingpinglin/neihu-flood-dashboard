@@ -801,8 +801,30 @@
           <div class="confidence">
             <article class="confidence-item"><b>可支持</b><span>內湖本地雨強不極端，上游山區雨量與持續時間才是主要產流訊號。</span></article>
             <article class="confidence-item"><b>可排除部分可能</b><span>南湖大橋、大直橋水位未達三級警戒，不支持主河道已達警戒作為單一主因。</span></article>
+            <article class="confidence-item"><b>補充佐證</b><span>CWA Past2days 顯示內湖、南港、文山、信義多站兩日累積雨量偏高，支持流域長時間承壓。</span></article>
             <article class="confidence-item"><b>仍需保留</b><span>抽水站 API 是最新快照；CWA 歷史 API 在關鍵時段取得的是雷達回波，不是測站雨量歷線。</span></article>
           </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>現有資料分層</h2>
+        <div class="decision-grid">
+          <article class="decision-card">
+            <span class="verdict-pill high">核心判讀</span>
+            <h3>淹水前逐時雨型</h3>
+            <p>03:00 後山區連續中高強度降雨，內湖本地小時雨強約 20-24 mm/hr，較不像單一極端短延時暴雨。</p>
+          </article>
+          <article class="decision-card">
+            <span class="verdict-pill high">核心判讀</span>
+            <h3>河川水位與抽水站快照</h3>
+            <p>南湖大橋、大直橋未達三級警戒；抽水站 API 僅能顯示即時狀態，不能取代逐分鐘啟停、抽水量與內外水位歷線。</p>
+          </article>
+          <article class="decision-card">
+            <span class="verdict-pill medium">補充判讀</span>
+            <h3>CWA Past2days 累積雨量</h3>
+            <p>可證明 6/24 17:30 至 6/26 17:30 整體流域累積雨量偏高，但包含淹水後降雨，不能直接倒推淹水開始前雨強。</p>
+          </article>
         </div>
       </section>
 
@@ -901,6 +923,31 @@
           <div class="cell r1">續</div>
         </div>
         <p class="footnote">顏色越深代表雨強越高。決策重點不是單一小時，而是 03:00 後山區連續降雨造成逕流累積。</p>
+      </section>
+
+      <section>
+        <h2>CWA 兩日累積雨量補充</h2>
+        <div class="evidence-grid">
+          <article class="source-card">
+            <p class="label">O-A0002-001 / Past2days</p>
+            <strong>兩日累積雨量顯示流域已長時間承壓</strong>
+            <p>查詢時間為 2026-06-26 17:30，Past2days 約代表 2026-06-24 17:30 至 2026-06-26 17:30 的累積雨量。這能支持「不是單點降雨，而是整個流域累積偏高」的判斷。</p>
+            <p>但此時間窗跨過 2026-06-25 中午淹水發生後，因此只能作為補充證據，不能直接用來判定淹水開始前的瞬時雨強或排水系統當時入流量。</p>
+          </article>
+          <div class="bars">
+            <div class="bar-row"><span>東湖國小</span><div class="track"><div class="fill high" style="width:100%"></div></div><span>360.5</span></div>
+            <div class="bar-row"><span>碧湖國小</span><div class="track"><div class="fill high" style="width:97%"></div></div><span>351.0</span></div>
+            <div class="bar-row"><span>九如里</span><div class="track"><div class="fill high" style="width:94%"></div></div><span>338.0</span></div>
+            <div class="bar-row"><span>舊莊里</span><div class="track"><div class="fill mid" style="width:90%"></div></div><span>324.0</span></div>
+            <div class="bar-row"><span>茶製場</span><div class="track"><div class="fill mid" style="width:86%"></div></div><span>311.0</span></div>
+            <div class="bar-row"><span>安泰里</span><div class="track"><div class="fill mid" style="width:84%"></div></div><span>304.0</span></div>
+            <div class="bar-row"><span>大湖里</span><div class="track"><div class="fill mid" style="width:83%"></div></div><span>297.5</span></div>
+            <div class="bar-row"><span>貓空</span><div class="track"><div class="fill" style="width:69%"></div></div><span>250.0</span></div>
+            <div class="bar-row"><span>四獸山</span><div class="track"><div class="fill" style="width:69%"></div></div><span>250.0</span></div>
+            <div class="bar-row"><span>博嘉國小</span><div class="track"><div class="fill" style="width:66%"></div></div><span>239.0</span></div>
+          </div>
+        </div>
+        <p class="footnote">單位：mm。此區為 CWA 最新觀測 API 的累積雨量補充，不取代淹水前逐時雨量歷線。</p>
       </section>
 
       <section>
@@ -1018,6 +1065,11 @@
             <span class="verdict-pill medium">決策限制</span>
             <h3>雷達回波不是雨量毫米</h3>
             <p>dBZ 可作為降雨系統佐證，但不能直接等同 mm/hr。工程判斷仍需取得 10 分鐘或逐時測站雨量、抽水站歷線與箱涵水位，才能校正淹水發生前的實際入流量。</p>
+          </article>
+          <article class="decision-card">
+            <span class="verdict-pill medium">補充取得</span>
+            <h3>O-A0002-001 Past2days</h3>
+            <p>最新觀測 API 可取得兩日累積雨量，內湖與南港多站達約 300 mm 以上；但時間窗包含淹水後降雨，只能作為流域承壓佐證。</p>
           </article>
         </div>
         <p class="footnote">本次 CWA 授權查詢結果已另存為不含授權碼的整理檔：data/cwa-history/O-A0059-001_metadata_20260624_0000_20260625_1200.redacted.json。</p>
