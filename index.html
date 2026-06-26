@@ -801,6 +801,7 @@
           <div class="confidence">
             <article class="confidence-item"><b>可支持</b><span>內湖本地雨強不極端，上游山區雨量與持續時間才是主要產流訊號。</span></article>
             <article class="confidence-item"><b>可排除部分可能</b><span>南湖大橋、大直橋水位未達三級警戒，不支持主河道已達警戒作為單一主因。</span></article>
+            <article class="confidence-item"><b>官方補強</b><span>C-B0024-001 有 6/25 中午前逐時歷史雨量，可佐證北側與山區測站已有明顯降雨差異。</span></article>
             <article class="confidence-item"><b>補充佐證</b><span>CWA Past2days 顯示內湖、南港、文山、信義多站兩日累積雨量偏高，支持流域長時間承壓。</span></article>
             <article class="confidence-item"><b>仍需保留</b><span>抽水站 API 是最新快照；CWA 歷史 API 在關鍵時段取得的是雷達回波，不是測站雨量歷線。</span></article>
           </div>
@@ -824,6 +825,42 @@
             <span class="verdict-pill medium">補充判讀</span>
             <h3>CWA Past2days 累積雨量</h3>
             <p>可證明 6/24 17:30 至 6/26 17:30 整體流域累積雨量偏高，但包含淹水後降雨，不能直接倒推淹水開始前雨強。</p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>資料證據矩陣</h2>
+        <div class="decision-grid">
+          <article class="decision-card">
+            <span class="verdict-pill high">直接支撐</span>
+            <h3>內湖流域逐時雨量</h3>
+            <p>安泰里、東湖國小、大湖里、貓空、茶製場等測站能判讀雨峰、持續時間與產流時序，是目前最接近淹水成因的核心資料。</p>
+          </article>
+          <article class="decision-card">
+            <span class="verdict-pill high">官方補強</span>
+            <h3>C-B0024-001 逐時歷史觀測</h3>
+            <p>有 2026-06-25 中午前逐時雨量，可佐證北台灣降雨時序；但只有 31 個署屬站，缺內湖、南港、文山細部雨量站。</p>
+          </article>
+          <article class="decision-card">
+            <span class="verdict-pill medium">空間佐證</span>
+            <h3>O-A0059 雷達回波</h3>
+            <p>可看強回波位置與移動趨勢，補強暴雨核心是否在山區；但單位為 dBZ，不可直接等同 mm/hr。</p>
+          </article>
+          <article class="decision-card">
+            <span class="verdict-pill medium">累積佐證</span>
+            <h3>O-A0002 Past2days / Past3days</h3>
+            <p>可證明事件前後流域累積雨量偏高；但時間窗含淹水後降雨，不能單獨判定 6/25 中午前的觸發雨強。</p>
+          </article>
+          <article class="decision-card">
+            <span class="verdict-pill low">排除用途</span>
+            <h3>水位 PDF</h3>
+            <p>南湖大橋、大直橋等未達三級警戒，可降低「主河道外水氾濫為唯一主因」的可能；仍需排水口局部外水位歷線。</p>
+          </article>
+          <article class="decision-card">
+            <span class="verdict-pill low">限制很大</span>
+            <h3>抽水站最新 API</h3>
+            <p>可看快照時點狀態，不能判定操作過程。需要逐分鐘啟停、抽水量、內外水位，才能判斷調度或容量問題。</p>
           </article>
         </div>
       </section>
@@ -877,6 +914,63 @@
             <p class="footnote">單位：mm。此處依你提供的分析值做決策視覺化，後續可改接 API 自動更新。</p>
           </div>
         </div>
+      </section>
+
+      <section>
+        <h2>CWA 署屬站逐時觀測補強</h2>
+        <div class="evidence-grid">
+          <article class="source-card">
+            <p class="label">C-B0024-001 / 逐時歷史觀測</p>
+            <strong>6/25 中午前已可看見明顯時序差異</strong>
+            <p>這份資料涵蓋 2026-05-26 01:00 至 2026-06-26 00:00，欄位含逐時 Precipitation。它不是即時累積值，而是可用來回看 6/25 上午逐時雨量的官方歷史觀測。</p>
+            <p>限制是測站只有署屬有人站，缺安泰里、東湖國小、茶製場、貓空等內湖流域細部測站，因此適合作為官方補強，不取代本案核心流域雨量站。</p>
+          </article>
+          <div class="bars">
+            <div class="bar-row"><span>淡水</span><div class="track"><div class="fill high" style="width:100%"></div></div><span>136.5</span></div>
+            <div class="bar-row"><span>竹子湖</span><div class="track"><div class="fill mid" style="width:80%"></div></div><span>109.0</span></div>
+            <div class="bar-row"><span>鞍部</span><div class="track"><div class="fill mid" style="width:74%"></div></div><span>100.5</span></div>
+            <div class="bar-row"><span>臺北</span><div class="track"><div class="fill" style="width:15%"></div></div><span>20.0</span></div>
+            <div class="bar-row"><span>新北</span><div class="track"><div class="fill" style="width:4%"></div></div><span>5.5</span></div>
+            <div class="bar-row"><span>基隆</span><div class="track"><div class="fill" style="width:4%"></div></div><span>5.0</span></div>
+          </div>
+        </div>
+        <table class="water-table" aria-label="CWA 署屬站 6/25 上午逐時雨量摘要">
+          <thead>
+            <tr>
+              <th>測站</th>
+              <th>6/25 00-12 累積</th>
+              <th>最大時雨量</th>
+              <th>判讀用途</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>淡水</td>
+              <td class="water-level">136.5 mm</td>
+              <td>61.5 mm/hr</td>
+              <td>顯示北側雨帶在上午快速增強。</td>
+            </tr>
+            <tr>
+              <td>竹子湖</td>
+              <td class="water-level">109.0 mm</td>
+              <td>32.0 mm/hr</td>
+              <td>山區長時間降雨，支持土壤飽和與逕流增加。</td>
+            </tr>
+            <tr>
+              <td>鞍部</td>
+              <td class="water-level">100.5 mm</td>
+              <td>32.0 mm/hr</td>
+              <td>山區站同步偏高，補強地形降雨訊號。</td>
+            </tr>
+            <tr>
+              <td>臺北</td>
+              <td class="water-level">20.0 mm</td>
+              <td>9.0 mm/hr</td>
+              <td>平地署屬站不高，與「局部流域差異」判斷一致。</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="footnote">統計區間：2026-06-25 00:00-12:00。此表用於官方歷史觀測補強，不代表內湖細部流域測站雨量。</p>
       </section>
 
       <section>
@@ -1051,6 +1145,11 @@
       <section>
         <h2>CWA 歷史 API 查證</h2>
         <div class="decision-grid">
+          <article class="decision-card">
+            <span class="verdict-pill high">已採用</span>
+            <h3>C-B0024-001 逐時觀測</h3>
+            <p>可回看 6/25 中午前逐時雨量，適合作為官方歷史資料補強；限制是署屬站較少，無法取代內湖流域細部雨量站。</p>
+          </article>
           <article class="decision-card">
             <span class="verdict-pill high">已取得</span>
             <h3>O-A0059-001 雷達回波</h3>
