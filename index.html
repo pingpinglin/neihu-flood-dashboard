@@ -801,7 +801,7 @@
           <div class="confidence">
             <article class="confidence-item"><b>可支持</b><span>內湖本地雨強不極端，上游山區雨量與持續時間才是主要產流訊號。</span></article>
             <article class="confidence-item"><b>可排除部分可能</b><span>南湖大橋、大直橋水位未達三級警戒，不支持主河道已達警戒作為單一主因。</span></article>
-            <article class="confidence-item"><b>仍需保留</b><span>抽水站 API 是最新快照，不能單獨用來判定是否有操作失誤。</span></article>
+            <article class="confidence-item"><b>仍需保留</b><span>抽水站 API 是最新快照；CWA 歷史 API 在關鍵時段取得的是雷達回波，不是測站雨量歷線。</span></article>
           </div>
         </div>
       </section>
@@ -999,6 +999,28 @@
             <p class="footnote">若能取得歷史逐分鐘抽水量，這份頁面可升級為接近技師鑑定等級的事件回放。</p>
           </div>
         </div>
+      </section>
+
+      <section>
+        <h2>CWA 歷史 API 查證</h2>
+        <div class="decision-grid">
+          <article class="decision-card">
+            <span class="verdict-pill high">已取得</span>
+            <h3>O-A0059-001 雷達回波</h3>
+            <p>2026-06-24 00:00 至 2026-06-25 12:00 共取得 216 筆 10 分鐘歷史檔。資料內容為雷達合成回波 dBZ，可用來輔助判讀強回波的位置、時間與移動趨勢。</p>
+          </article>
+          <article class="decision-card">
+            <span class="verdict-pill low">未涵蓋</span>
+            <h3>O-A0001 / O-A0002 測站雨量</h3>
+            <p>以淹水發生前的時間窗查詢，這兩組資料沒有可用歷史檔；目前無法用它們直接補出內湖、南港、文山、信義各測站的逐時雨量歷線。</p>
+          </article>
+          <article class="decision-card">
+            <span class="verdict-pill medium">決策限制</span>
+            <h3>雷達回波不是雨量毫米</h3>
+            <p>dBZ 可作為降雨系統佐證，但不能直接等同 mm/hr。工程判斷仍需取得 10 分鐘或逐時測站雨量、抽水站歷線與箱涵水位，才能校正淹水發生前的實際入流量。</p>
+          </article>
+        </div>
+        <p class="footnote">本次 CWA 授權查詢結果已另存為不含授權碼的整理檔：data/cwa-history/O-A0059-001_metadata_20260624_0000_20260625_1200.redacted.json。</p>
       </section>
 
       <section>
