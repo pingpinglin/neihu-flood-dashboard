@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>內湖淹水風險判讀儀表板</title>
+  <meta name="description" content="以雨量、水位與抽水站公開資料判讀內湖淹水成因，初步結論指向內水排除不及與流域排水瓶頸。">
+  <meta property="og:title" content="內湖淹水風險判讀儀表板">
+  <meta property="og:description" content="決策者版儀表板：比較內湖本地雨強、上游山區產流、河川水位與抽水站狀態，判斷淹水風險來源。">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_TW">
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #5b6773;
+      --line: #d9e0e7;
+      --soft: #f5f7f9;
+      --panel: #ffffff;
+      --blue: #2563eb;
+      --cyan: #0891b2;
+      --green: #15803d;
+      --amber: #b7791f;
+      --orange: #c2410c;
+      --red: #b91c1c;
+      --violet: #6d28d9;
+      --shadow: 0 14px 36px rgba(23, 32, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+      background: #eef3f7;
+      line-height: 1.55;
+    }
+
+    .page {
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.92), rgba(238,243,247,0.98)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='560' viewBox='0 0 900 560'%3E%3Crect width='900' height='560' fill='%23dbe7ef'/%3E%3Cpath d='M0 352 C104 300 176 330 254 276 C340 216 384 140 494 154 C598 167 620 250 714 244 C794 238 836 190 900 208 L900 560 L0 560 Z' fill='%23a8c6d6'/%3E%3Cpath d='M0 425 C145 350 198 400 326 330 C441 268 508 316 612 286 C728 252 788 306 900 272 L900 560 L0 560 Z' fill='%237fa7bc' opacity='.75'/%3E%3Cpath d='M96 0 L156 560 M268 0 L304 560 M466 0 L430 560 M682 0 L626 560 M0 128 L900 98 M0 252 L900 228 M0 396 L900 374' stroke='%23ffffff' stroke-width='4' opacity='.45'/%3E%3Cpath d='M690 48 C715 74 754 75 779 51 C815 82 855 107 900 111 L900 0 L682 0 Z' fill='%23f7fbfd' opacity='.75'/%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: center top;
+    }
+
+    header {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 18px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.7fr);
+      gap: 22px;
+      align-items: end;
+      min-height: 360px;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(34px, 6vw, 72px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 740px;
+      margin: 18px 0 0;
+      color: #263442;
+      font-size: clamp(17px, 2vw, 22px);
+      font-weight: 550;
+    }
+
+    .verdict {
+      padding: 18px;
+      border: 1px solid rgba(23, 32, 42, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+
+    .label {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .verdict strong {
+      display: block;
+      color: var(--red);
+      font-size: 28px;
+      line-height: 1.25;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 20px 44px;
+    }
+
+    section {
+      margin-top: 22px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: var(--shadow);
+    }
+
+    section:first-of-type {
+      margin-top: 0;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .metric {
+      min-height: 146px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .metric .value {
+      margin-top: 8px;
+      font-size: 34px;
+      font-weight: 850;
+      line-height: 1.1;
+    }
+
+    .metric .note {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .status-red {
+      border-top: 5px solid var(--red);
+    }
+
+    .status-amber {
+      border-top: 5px solid var(--amber);
+    }
+
+    .status-blue {
+      border-top: 5px solid var(--blue);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .map {
+      position: relative;
+      min-height: 420px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.84), rgba(238,246,250,.9)),
+        radial-gradient(circle at 28% 75%, rgba(8,145,178,.22), transparent 22%),
+        radial-gradient(circle at 58% 44%, rgba(185,28,28,.24), transparent 26%),
+        radial-gradient(circle at 78% 30%, rgba(194,65,12,.20), transparent 20%);
+    }
+
+    .river {
+      position: absolute;
+      left: -6%;
+      right: -6%;
+      top: 53%;
+      height: 44px;
+      transform: rotate(-7deg);
+      background: rgba(37, 99, 235, 0.17);
+      border-top: 2px solid rgba(37, 99, 235, 0.25);
+      border-bottom: 2px solid rgba(37, 99, 235, 0.25);
+    }
+
+    .ridge {
+      position: absolute;
+      inset: auto -10% 0 -10%;
+      height: 44%;
+      clip-path: polygon(0 44%, 16% 24%, 30% 46%, 43% 13%, 57% 38%, 72% 10%, 86% 34%, 100% 19%, 100% 100%, 0 100%);
+      background: rgba(21, 128, 61, 0.16);
+    }
+
+    .place {
+      position: absolute;
+      width: min(160px, 38vw);
+      padding: 10px 12px;
+      border: 1px solid rgba(23, 32, 42, 0.14);
+      border-radius: 8px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 10px 24px rgba(23, 32, 42, 0.10);
+      font-weight: 800;
+    }
+
+    .place span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .hot {
+      border-color: rgba(185,28,28,.45);
+      box-shadow: 0 0 0 5px rgba(185,28,28,.08), 0 12px 26px rgba(23,32,42,.12);
+    }
+
+    .neihu { top: 42%; left: 68%; }
+    .nangang { top: 52%; left: 50%; }
+    .xinyi { top: 36%; left: 42%; }
+    .wenshan { top: 65%; left: 24%; }
+    .maokong { top: 77%; left: 34%; }
+
+    .arrow {
+      position: absolute;
+      width: 170px;
+      height: 3px;
+      background: var(--orange);
+      transform-origin: left center;
+    }
+
+    .arrow::after {
+      content: "";
+      position: absolute;
+      right: -1px;
+      top: -6px;
+      border-left: 13px solid var(--orange);
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+    }
+
+    .a1 { left: 38%; top: 69%; transform: rotate(-28deg); }
+    .a2 { left: 50%; top: 48%; transform: rotate(8deg); }
+    .a3 { left: 58%; top: 60%; transform: rotate(-31deg); }
+
+    .bars {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 100px minmax(0, 1fr) 62px;
+      gap: 10px;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 750;
+    }
+
+    .track {
+      height: 18px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e8edf2;
+    }
+
+    .fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--cyan);
+    }
+
+    .fill.high {
+      background: var(--red);
+    }
+
+    .fill.mid {
+      background: var(--orange);
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: 90px repeat(8, minmax(42px, 1fr));
+      gap: 6px;
+      align-items: center;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .time-head,
+    .station {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .cell {
+      min-width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .r1 { background: #81b6cc; color: #10212b; }
+    .r2 { background: #0891b2; }
+    .r3 { background: #c2410c; }
+    .r4 { background: #b91c1c; }
+
+    .conclusion-box {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.58fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .statement {
+      padding: 20px;
+      border: 1px solid rgba(185, 28, 28, 0.28);
+      border-radius: 8px;
+      background: #fff7ed;
+    }
+
+    .statement strong {
+      display: block;
+      color: var(--red);
+      font-size: 24px;
+      line-height: 1.35;
+    }
+
+    .statement p {
+      margin: 12px 0 0;
+      color: #3b4652;
+      font-size: 16px;
+    }
+
+    .confidence {
+      display: grid;
+      gap: 10px;
+    }
+
+    .confidence-item {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .confidence-item b {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .confidence-item span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .decision-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .decision-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .decision-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .verdict-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .verdict-pill.low { background: var(--green); }
+    .verdict-pill.mid { background: var(--orange); }
+    .verdict-pill.high { background: var(--red); }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .node {
+      min-height: 116px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .node b {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+
+    .node p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .risk-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .risk-list li {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .rank {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #edf2f7;
+      font-weight: 850;
+    }
+
+    .tag {
+      padding: 5px 9px;
+      border-radius: 999px;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .tag.red { background: var(--red); }
+    .tag.orange { background: var(--orange); }
+    .tag.blue { background: var(--blue); }
+    .tag.green { background: var(--green); }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(360px, 1.15fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .evidence-grid > *,
+    .split > *,
+    .pump-card {
+      min-width: 0;
+    }
+
+    .source-card {
+      min-height: 100%;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fbfd;
+    }
+
+    .source-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .water-table,
+    .pump-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      font-size: 14px;
+    }
+
+    .water-table th,
+    .water-table td,
+    .pump-table th,
+    .pump-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .water-table th,
+    .pump-table th {
+      background: #e6eef7;
+      color: #1f2a37;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .water-table tr:last-child td,
+    .pump-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .water-level {
+      font-weight: 850;
+    }
+
+    .distance {
+      color: var(--green);
+      font-weight: 850;
+    }
+
+    .pump-dashboard {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .pump-card {
+      min-height: 152px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .pump-card h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .pump-card .time {
+      margin: 2px 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .pump-values {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .pump-values span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .pump-values b {
+      display: block;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .status-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #edf2f7;
+      color: #1f2a37;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .pill.running {
+      background: #fee2e2;
+      color: var(--red);
+    }
+
+    .pill.open {
+      background: #dcfce7;
+      color: var(--green);
+    }
+
+    .pill.closed {
+      background: #ffedd5;
+      color: var(--orange);
+    }
+
+    .api-status {
+      min-height: 20px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .api {
+      display: grid;
+      gap: 10px;
+    }
+
+    .api-row {
+      display: grid;
+      grid-template-columns: 160px minmax(0, 1fr);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--panel);
+    }
+
+    .api-row b {
+      padding: 12px 14px;
+      background: #e6eef7;
+    }
+
+    .api-row span {
+      padding: 12px 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .footnote {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .split,
+      .grid-3,
+      .conclusion-box,
+      .decision-grid,
+      .evidence-grid,
+      .pump-dashboard,
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+        padding-top: 22px;
+      }
+
+      .flow {
+        gap: 8px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      header,
+      main {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      section {
+        padding: 16px;
+      }
+
+      .api-row,
+      .risk-list li {
+        grid-template-columns: 1fr;
+      }
+
+      .water-table,
+      .pump-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .tag {
+        justify-self: start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="hero">
+        <div>
+          <p class="label">Decision Brief</p>
+          <h1>內湖淹水更像流域排水瓶頸</h1>
+          <p class="subtitle">現有資料較不支持「內湖本地極端暴雨」或「基隆河主河道達警戒倒灌」作為單一主因；風險主軸是長時間降雨後，整個集水區逕流同時進入內水排水系統。</p>
+        </div>
+        <div class="verdict">
+          <p class="label">目前判斷</p>
+          <strong>核心問題較可能是內水排除不及與流域排水瓶頸。</strong>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <h2>一眼看結論</h2>
+        <div class="grid-3">
+          <article class="metric status-blue">
+            <p class="label">內湖本地雨強</p>
+            <div class="value">20-24</div>
+            <p class="note">mm/hr 左右，未達極端短延時暴雨。</p>
+          </article>
+          <article class="metric status-red">
+            <p class="label">山區雨峰</p>
+            <div class="value">53</div>
+            <p class="note">貓空單小時雨量，且連續多小時偏高。</p>
+          </article>
+          <article class="metric status-amber">
+            <p class="label">風險型態</p>
+            <div class="value">8h+</div>
+            <p class="note">長時間降雨讓逕流係數升高，排水壓力累積。</p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>初步技術結論</h2>
+        <div class="conclusion-box">
+          <article class="statement">
+            <strong>內湖淹水的核心問題，不是雨只在內湖下太大，也不是目前資料可證明的基隆河主河道外水氾濫。</strong>
+            <p>較合理的初步判斷是：長時間降雨後，上游山區產流、本地降雨、排水幹線匯流、抽水站操作條件與基隆河外水位共同作用，使道路側溝、雨水下水道、幹線箱涵、抽水站進水端、閘門與抽水調度之間的某一個或多個環節形成瓶頸。</p>
+          </article>
+          <div class="confidence">
+            <article class="confidence-item"><b>可支持</b><span>內湖本地雨強不極端，上游山區雨量與持續時間才是主要產流訊號。</span></article>
+            <article class="confidence-item"><b>可排除部分可能</b><span>南湖大橋、大直橋水位未達三級警戒，不支持主河道已達警戒作為單一主因。</span></article>
+            <article class="confidence-item"><b>仍需保留</b><span>抽水站 API 是最新快照，不能單獨用來判定是否有操作失誤。</span></article>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>決策判斷矩陣</h2>
+        <div class="decision-grid">
+          <article class="decision-card">
+            <span class="verdict-pill low">證據較弱</span>
+            <h3>內湖本地雨下太大</h3>
+            <p>內湖主要測站最高小時雨量約 20-24 mm/hr，未達 80-100 mm/hr 等級短延時暴雨。可作為負荷來源，但較不像單一主因。</p>
+          </article>
+          <article class="decision-card">
+            <span class="verdict-pill low">證據較弱</span>
+            <h3>基隆河主河道倒灌</h3>
+            <p>南湖大橋 3.69 m，低於三級警戒 6.4 m；大直橋 1.67 m，低於三級警戒 3.3 m。主河道警戒不足以解釋全部淹水。</p>
+          </article>
+          <article class="decision-card">
+            <span class="verdict-pill high">目前最合理</span>
+            <h3>內水排除與流域瓶頸</h3>
+            <p>文山、信義、南港山區長時間產流，與內湖本地降雨同時進入都市排水系統，較可能在箱涵、進水端、閘門或抽排能力形成瓶頸。</p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="split">
+          <div>
+            <h2>暴雨核心不在內湖</h2>
+            <div class="map" aria-label="暴雨核心與逕流方向示意圖">
+              <div class="river"></div>
+              <div class="ridge"></div>
+              <div class="place neihu">內湖<span>本地雨強中等</span></div>
+              <div class="place nangang hot">南港山區<span>170 mm 級距</span></div>
+              <div class="place xinyi hot">信義山區<span>160 mm 級距</span></div>
+              <div class="place wenshan hot">文山山區<span>230 mm 級距</span></div>
+              <div class="place maokong hot">貓空<span>最高 53 mm/hr</span></div>
+              <div class="arrow a1"></div>
+              <div class="arrow a2"></div>
+              <div class="arrow a3"></div>
+            </div>
+          </div>
+          <div>
+            <h2>24 小時雨量級距</h2>
+            <div class="bars">
+              <div class="bar-row"><span>文山山區</span><div class="track"><div class="fill high" style="width:100%"></div></div><span>230</span></div>
+              <div class="bar-row"><span>南港山區</span><div class="track"><div class="fill mid" style="width:74%"></div></div><span>170</span></div>
+              <div class="bar-row"><span>信義山區</span><div class="track"><div class="fill mid" style="width:70%"></div></div><span>160</span></div>
+              <div class="bar-row"><span>內湖本地</span><div class="track"><div class="fill" style="width:50%"></div></div><span>110</span></div>
+            </div>
+            <p class="footnote">單位：mm。此處依你提供的分析值做決策視覺化，後續可改接 API 自動更新。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>逐時雨型：問題是連續產流</h2>
+        <div class="timeline" aria-label="逐時雨量熱度表">
+          <div></div>
+          <div class="time-head">03</div>
+          <div class="time-head">04</div>
+          <div class="time-head">05</div>
+          <div class="time-head">06</div>
+          <div class="time-head">07</div>
+          <div class="time-head">08</div>
+          <div class="time-head">09</div>
+          <div class="time-head">10</div>
+
+          <div class="station">安泰里</div>
+          <div class="cell r2">16</div>
+          <div class="cell r1">8.5</div>
+          <div class="cell r1">9</div>
+          <div class="cell r1">1.5</div>
+          <div class="cell r1">2</div>
+          <div class="cell r1">5</div>
+          <div class="cell r1">7.5</div>
+          <div class="cell r1">2</div>
+
+          <div class="station">貓空</div>
+          <div class="cell r4">53</div>
+          <div class="cell r3">39.5</div>
+          <div class="cell r3">28</div>
+          <div class="cell r2">-</div>
+          <div class="cell r2">-</div>
+          <div class="cell r2">-</div>
+          <div class="cell r2">-</div>
+          <div class="cell r2">-</div>
+
+          <div class="station">茶製場</div>
+          <div class="cell r2">24</div>
+          <div class="cell r2">20.5</div>
+          <div class="cell r2">24</div>
+          <div class="cell r2">23</div>
+          <div class="cell r1">續</div>
+          <div class="cell r1">續</div>
+          <div class="cell r1">續</div>
+          <div class="cell r1">續</div>
+        </div>
+        <p class="footnote">顏色越深代表雨強越高。決策重點不是單一小時，而是 03:00 後山區連續降雨造成逕流累積。</p>
+      </section>
+
+      <section>
+        <h2>河川水位佐證：排放端尚未達警戒</h2>
+        <div class="evidence-grid">
+          <article class="source-card">
+            <p class="label">Water Level Evidence</p>
+            <strong>經濟部水利署防災資訊網即時水位</strong>
+            <p>PDF 顯示資料產出時間為 2026-06-26 11:46；淡水河流域多數相關站為 06-26 11:30 水情。這份資料可用來判斷基隆河與淡水河系是否已逼近警戒水位。</p>
+            <p>就這一刻的截面來看，南湖大橋、大直橋、五堵、社后橋仍低於二級或三級警戒值，較支持「局部排水瓶頸、箱涵滿流或抽排受限」仍需另查，而不能只用河川外水位已達警戒來解釋。</p>
+          </article>
+          <div>
+            <table class="water-table" aria-label="河川水位佐證表">
+              <thead>
+                <tr>
+                  <th>水位站</th>
+                  <th>水情時間</th>
+                  <th>目前水位</th>
+                  <th>最近警戒差距</th>
+                  <th>判讀</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>南湖大橋</td>
+                  <td>06-26 11:30</td>
+                  <td class="water-level">3.69 m</td>
+                  <td class="distance">低於三級 2.71 m</td>
+                  <td>內湖南港側排放端尚未達警戒。</td>
+                </tr>
+                <tr>
+                  <td>大直橋</td>
+                  <td>06-26 11:30</td>
+                  <td class="water-level">1.67 m</td>
+                  <td class="distance">低於三級 1.63 m</td>
+                  <td>基隆河下游仍需看排水口局部水位。</td>
+                </tr>
+                <tr>
+                  <td>五堵</td>
+                  <td>06-26 11:30</td>
+                  <td class="water-level">8.53 m</td>
+                  <td class="distance">低於二級 5.87 m</td>
+                  <td>基隆河上游未顯示警戒水位壓力。</td>
+                </tr>
+                <tr>
+                  <td>社后橋</td>
+                  <td>06-26 11:30</td>
+                  <td class="water-level">4.13 m</td>
+                  <td class="distance">低於二級 4.37 m</td>
+                  <td>主河道警戒水位不是唯一解釋。</td>
+                </tr>
+                <tr>
+                  <td>寶橋</td>
+                  <td>06-26 11:30</td>
+                  <td class="water-level">11.61 m</td>
+                  <td class="distance">約達三級 11.6 m</td>
+                  <td>新店溪側有警戒訊號，但非內湖直接排放口。</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="footnote">警戒差距以 PDF 表內最近一級、二級或三級警戒值計算；若要判斷回水，仍需取得內湖各排水出口與抽水站外水位的逐分鐘歷線。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>淹水形成鏈</h2>
+        <div class="flow">
+          <article class="node"><b>山區連續降雨</b><p>文山、信義、南港山區多小時中高強度降雨。</p></article>
+          <article class="node"><b>土壤趨近飽和</b><p>新增降雨較難入滲，地表逕流比例升高。</p></article>
+          <article class="node"><b>逕流集中下洩</b><p>上游水量與內湖本地降雨在低地匯合。</p></article>
+          <article class="node"><b>箱涵或幹線滿流</b><p>若幹線流量超過容量，就會局部回堵。</p></article>
+          <article class="node"><b>抽排受限</b><p>抽水站滿載或基隆河高水位，會拉長積水時間。</p></article>
+        </div>
+      </section>
+
+      <section>
+        <div class="split">
+          <div>
+            <h2>最需要決策者追的資料</h2>
+            <ul class="risk-list">
+              <li><span class="rank">1</span><strong>抽水站逐分鐘啟停紀錄、抽水量、內外水位歷線</strong><span class="tag red">最高優先</span></li>
+              <li><span class="rank">2</span><strong>成功路、港墘路、文德路幹線箱涵水位與流量</strong><span class="tag blue">定位瓶頸</span></li>
+              <li><span class="rank">3</span><strong>基隆河排放口外水位與主河道水位曲線</strong><span class="tag orange">判斷回水</span></li>
+              <li><span class="rank">4</span><strong>積淹水通報時間、最高積水深度與退水時間</strong><span class="tag green">校正模型</span></li>
+            </ul>
+          </div>
+          <div>
+            <h2>抽水站 API 現況卡</h2>
+            <div class="api">
+              <div class="api-row"><b>API 位址</b><span>https://heopublic.gov.taipei/taipei-heo-api/openapi/pumb/latest</span></div>
+              <div class="api-row"><b>實測方式</b><span>GET。文件截圖標示 POST，但實測 POST 回 405 Method Not Allowed。</span></div>
+              <div class="api-row"><b>資料限制</b><span>此端點提供最新快照，非歷史逐分鐘運轉紀錄。</span></div>
+              <div class="api-row"><b>用途</b><span>即時檢查抽水站內外水位、抽水狀態與閘門狀態。</span></div>
+            </div>
+            <p class="footnote">若能取得歷史逐分鐘抽水量，這份頁面可升級為接近技師鑑定等級的事件回放。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>抽水站即時狀態</h2>
+        <div class="pump-dashboard" id="pumpDashboard" aria-live="polite"></div>
+        <p class="api-status" id="pumpStatus">正在讀取台北市抽水站公開 API...</p>
+        <p class="footnote">決策提醒：康寧、港墘、南湖、陽光等站若在快照時點顯示停止且閘門開啟，成功、大直顯示運轉中且閘門關閉，只能代表該時點狀態；沒有逐分鐘啟停、抽水量、內外水位歷線前，不能武斷判定「抽水站沒開」或「閘門錯誤」。</p>
+      </section>
+    </main>
+  </div>
+  <script>
+    const pumpApi = "https://heopublic.gov.taipei/taipei-heo-api/openapi/pumb/latest";
+    const targetPumpNames = ["康寧", "成功", "港墘", "南湖", "陽光", "大直"];
+    const fallbackPumps = [
+      { stn_id: "302", stn_name: "康寧", obs_time: "2026-06-26 11:00:00", inner_value: "3.56", outer_value: "3.58", pumb_num: 7, door_num: 4, pumb_status: "停止", door_status: "閘門開啟" },
+      { stn_id: "210", stn_name: "成功", obs_time: "2026-06-26 11:01:00", inner_value: "2.73", outer_value: "3.34", pumb_num: 4, door_num: 1, pumb_status: "運轉中", door_status: "閘門關閉" },
+      { stn_id: "308", stn_name: "港墘", obs_time: "2026-06-26 11:00:00", inner_value: "2.46", outer_value: "2.22", pumb_num: 8, door_num: 2, pumb_status: "停止", door_status: "閘門開啟" },
+      { stn_id: "303", stn_name: "南湖", obs_time: "2026-06-26 11:00:00", inner_value: "4.01", outer_value: "3.59", pumb_num: 3, door_num: 1, pumb_status: "停止", door_status: "閘門開啟" },
+      { stn_id: "307", stn_name: "陽光", obs_time: "2026-06-26 11:00:00", inner_value: "2.17", outer_value: "2.22", pumb_num: 10, door_num: 1, pumb_status: "停止", door_status: "閘門開啟" },
+      { stn_id: "311", stn_name: "大直", obs_time: "2026-06-26 11:00:00", inner_value: "1.14", outer_value: "2.03", pumb_num: 12, door_num: 6, pumb_status: "運轉中", door_status: "閘門關閉" }
+    ];
+
+    function renderPumpCards(items, message) {
+      const dashboard = document.getElementById("pumpDashboard");
+      const status = document.getElementById("pumpStatus");
+      dashboard.innerHTML = items.map((item) => {
+        const running = item.pumb_status === "運轉中";
+        const doorOpen = item.door_status === "閘門開啟";
+        const doorClass = doorOpen ? "open" : "closed";
+        const doorText = item.door_status || "無閘門資料";
+        return `
+          <article class="pump-card">
+            <h3>${item.stn_name}</h3>
+            <p class="time">${item.obs_time || "時間未提供"}</p>
+            <div class="pump-values">
+              <div><span>內水位</span><b>${item.inner_value || "--"} m</b></div>
+              <div><span>外水位</span><b>${item.outer_value || "--"} m</b></div>
+            </div>
+            <div class="status-line">
+              <span class="pill ${running ? "running" : ""}">${item.pumb_status || "狀態未知"}</span>
+              <span class="pill ${doorClass}">${doorText}</span>
+              <span class="pill">${item.pumb_num || 0} 機</span>
+            </div>
+          </article>
+        `;
+      }).join("");
+      status.textContent = message;
+    }
+
+    async function loadPumpSnapshot() {
+      try {
+        const response = await fetch(pumpApi, { method: "GET" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        const selected = targetPumpNames
+          .map((name) => data.find((item) => item.stn_name === name))
+          .filter(Boolean);
+        renderPumpCards(selected.length ? selected : fallbackPumps, "已讀取公開 API 最新快照；此資料不是歷史逐分鐘紀錄。");
+      } catch (error) {
+        renderPumpCards(fallbackPumps, "API 讀取失敗，暫以 2026-06-26 11:00 左右實測快照顯示。");
+      }
+    }
+
+    loadPumpSnapshot();
+  </script>
+</body>
+</html>
