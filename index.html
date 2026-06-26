@@ -379,6 +379,32 @@
       gap: 12px;
     }
 
+    .notice {
+      display: grid;
+      grid-template-columns: minmax(0, 0.3fr) minmax(0, 1fr);
+      gap: 16px;
+      padding: 18px;
+      border: 1px solid rgba(37, 99, 235, 0.28);
+      border-radius: 8px;
+      background: #eff6ff;
+    }
+
+    .notice strong {
+      display: block;
+      color: var(--blue);
+      font-size: 20px;
+      line-height: 1.35;
+    }
+
+    .notice p {
+      margin: 0;
+      color: #334155;
+    }
+
+    .notice p + p {
+      margin-top: 8px;
+    }
+
     .decision-card {
       padding: 16px;
       border: 1px solid var(--line);
@@ -670,6 +696,7 @@
       .split,
       .grid-3,
       .conclusion-box,
+      .notice,
       .decision-grid,
       .evidence-grid,
       .pump-dashboard,
@@ -751,6 +778,16 @@
             <div class="value">8h+</div>
             <p class="note">長時間降雨讓逕流係數升高，排水壓力累積。</p>
           </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="notice">
+          <strong>AI 分析測試資料</strong>
+          <div>
+            <p>本網站為強降雨與淹水風險的初步分析展示，屬於 AI 協作產生的測試性資料，並非政府機關公告、工程鑑定報告或最終責任判定。</p>
+            <p>本頁內容由使用者提供雨量、水位、抽水站 API 等公開或截圖資料後，透過 OpenAI Codex 協助整理、分析與製作成決策儀表板。所有結論應作為討論與追查方向，仍需以主管機關原始資料、逐分鐘運轉紀錄與專業水利技師判讀為準。</p>
+          </div>
         </div>
       </section>
 
